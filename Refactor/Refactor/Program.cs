@@ -120,14 +120,14 @@ namespace Refactor
                 }
 
                 // 顯示此筆租借資料
-                result += "\t" + each.GetMovie().getTitle() + "\t"
-                    + thisAmount + "\n";
+                result += "\t" + each.GetMovie().getTitle() + "\t" 
+                    + thisAmount.ToString() + "\n";
                 totalAmount += thisAmount;                
             }
 
             // 列印結尾
             result += "Amount owed is " + totalAmount + "\n";
-            result += "You earned " + frequentRenterPoints + "frequent renter popints";
+            result += "You earned " + frequentRenterPoints + " frequent renter popints";
             return result;
         }
     }
