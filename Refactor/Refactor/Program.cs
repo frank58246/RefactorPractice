@@ -92,23 +92,7 @@ namespace Refactor
 
             foreach (var each in _rentals)
             {
-                double thisAmount = 0;
-                switch (each.GetMovie().getPriceCode())
-                {
-                    case Movie.REGULAR: // 普通片
-                        thisAmount += 2;
-                        if (each.getDaysRented() > 2)
-                            thisAmount += (each.getDaysRented() - 2) * 1.5;
-                        break;
-                    case Movie.NEW_RELEASE: // 新片
-                        thisAmount += each.getDaysRented() * 3;
-                        break;
-                    case Movie.CHILDRENS:
-                        thisAmount += 1.5;
-                        if (each.getDaysRented() > 3)
-                            thisAmount += (each.getDaysRented() - 3) * 1.5;
-                        break;                      
-                }
+                double thisAmount = amountFor(each);
 
                 // 累加常客積點
                 frequentRenterPoints++;
@@ -129,6 +113,28 @@ namespace Refactor
             result += "Amount owed is " + totalAmount + "\n";
             result += "You earned " + frequentRenterPoints + " frequent renter popints";
             return result;
+        }
+
+        private double amountFor(Rental each)
+        {
+            double thisAmount = 0;
+            switch (each.GetMovie().getPriceCode())
+            {
+                case Movie.REGULAR: // 普通片
+                    thisAmount += 2;
+                    if (each.getDaysRented() > 2)
+                        thisAmount += (each.getDaysRented() - 2) * 1.5;
+                    break;
+                case Movie.NEW_RELEASE: // 新片
+                    thisAmount += each.getDaysRented() * 3;
+                    break;
+                case Movie.CHILDRENS:
+                    thisAmount += 1.5;
+                    if (each.getDaysRented() > 3)
+                        thisAmount += (each.getDaysRented() - 3) * 1.5;
+                    break;
+            }
+            return thisAmount;
         }
     }
     
