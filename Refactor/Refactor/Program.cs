@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Refactor
 {
@@ -61,6 +62,37 @@ namespace Refactor
         {
             return _movie;
         }
+
+        public  double getCharge()
+        {
+            double result = 0;
+            switch (GetMovie().getPriceCode())
+            {
+                case Movie.REGULAR: // 普通片
+                    result += 2;
+                    if (getDaysRented() > 2)
+                        result += (getDaysRented() - 2) * 1.5;
+                    break;
+                case Movie.NEW_RELEASE: // 新片
+                    result += getDaysRented() * 3;
+                    break;
+                case Movie.CHILDRENS:
+                    result += 1.5;
+                    if (getDaysRented() > 3)
+                        result += (getDaysRented() - 3) * 1.5;
+                    break;
+            }
+            return result;
+        }
+
+        public int getFrequentRenterPoints()
+        {
+            if ((GetMovie().getPriceCode() == Movie.NEW_RELEASE) && getDaysRented() > 1)
+            {
+                return 2;
+            }
+            return 1;
+        }
     }
    public class Customer
     {
@@ -85,57 +117,33 @@ namespace Refactor
 
         public string statement()
         {
-            double totalAmount = 0;
-            int frequentRenterPoints = 0;
 
             string result = "Rental Record for " + getName() + "\n";
 
             foreach (var each in _rentals)
             {
-                double thisAmount = amountFor(each);
-
-                // 累加常客積點
-                frequentRenterPoints++;
-                // add bonus
-                if ((each.GetMovie().getPriceCode() == Movie.NEW_RELEASE) &&
-                    each.getDaysRented() > 1)
-                {
-                    frequentRenterPoints++;
-                }
-
+              
                 // 顯示此筆租借資料
                 result += "\t" + each.GetMovie().getTitle() + "\t" 
-                    + thisAmount.ToString() + "\n";
-                totalAmount += thisAmount;                
+                    + each.getCharge().ToString() + "\n";
             }
 
             // 列印結尾
-            result += "Amount owed is " + totalAmount + "\n";
-            result += "You earned " + frequentRenterPoints + " frequent renter popints";
+            result += "Amount owed is " + getTotalCharge() + "\n";
+            result += "You earned " + getTotalFrequestRenterPoints() + " frequent renter popints";
             return result;
         }
 
-        private double amountFor(Rental each)
+        private double getTotalCharge()
         {
-            double thisAmount = 0;
-            switch (each.GetMovie().getPriceCode())
-            {
-                case Movie.REGULAR: // 普通片
-                    thisAmount += 2;
-                    if (each.getDaysRented() > 2)
-                        thisAmount += (each.getDaysRented() - 2) * 1.5;
-                    break;
-                case Movie.NEW_RELEASE: // 新片
-                    thisAmount += each.getDaysRented() * 3;
-                    break;
-                case Movie.CHILDRENS:
-                    thisAmount += 1.5;
-                    if (each.getDaysRented() > 3)
-                        thisAmount += (each.getDaysRented() - 3) * 1.5;
-                    break;
-            }
-            return thisAmount;
+           return _rentals.Sum(x => x.getCharge());
         }
+
+        private int getTotalFrequestRenterPoints()
+        {
+            return _rentals.Sum(x => x.getFrequentRenterPoints());
+        }
+      
     }
     
 }
